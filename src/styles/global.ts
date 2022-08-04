@@ -6,6 +6,8 @@ export const GlobalStyles = createGlobalStyle`
         padding: 0px;
 
         box-sizing: border-box;
+
+        -webkit-font-smoothing: antialiased;
     }
 
     :focus {
@@ -16,6 +18,11 @@ export const GlobalStyles = createGlobalStyle`
     }
 
     body {
+        display: flex;
+        flex-direction: column;
+
+        padding: 5rem 10rem;
+
         background-color: ${(props) => props.theme.colors.base.background};
 
         color: ${(props) => props.theme.colors.base.text};

@@ -21,7 +21,11 @@ export const defaultTheme = {
 
     base: {
       background: '#121214',
-      elements: '#202024',
+      elements: {
+        primary: '#202024',
+        secondary: '#29292E',
+        tertiary: '#323238',
+      },
       divider: '#323238',
       placeholder: '#7C7C8A',
       label: '#8D8D99',
