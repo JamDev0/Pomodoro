@@ -15,8 +15,10 @@ interface baseTimer {
   duration: number
 }
 
-interface timerWithId extends baseTimer {
+interface timerCompleted extends baseTimer {
   id: string
+  startDate: Date
+  stoppedDate?: Date
 }
 
 export type timerStatusTypes = 'idle' | 'stopped' | 'onGoing' | 'over'
@@ -32,7 +34,7 @@ const timerContext = createContext<timerContextInterface>(
 )
 
 export function TimerProvider({ children }: TimerProviderProps) {
-  const [timersList, setTimersList] = useState<timerWithId[]>([])
+  const [timersList, setTimersList] = useState<timerCompleted[]>([])
 
   const [currentTimerId, setCurrentTimerId] = useState<string | null>(null)
 
@@ -70,9 +72,10 @@ export function TimerProvider({ children }: TimerProviderProps) {
   function addNewTimerToTimersList(incomingTimer: baseTimer) {
     const id = String(new Date().getTime())
 
-    const timer = {
+    const timer: timerCompleted = {
       id,
       ...incomingTimer,
+      startDate: new Date()
     }
 
     setTimersList((state) => [...state, timer])
