@@ -1,5 +1,5 @@
 import { ArrowFatLinesRight, HandPalm, Play, Plus } from 'phosphor-react'
-import { useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { Timer } from './components/Timer'
 import {
@@ -14,7 +14,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useTimer } from '../../hooks/useTimer'
 
 export function Home() {
-  const { addNewTimerToTimersList, timerStatus } = useTimer()
+  const { addNewTimerToTimersList, timerStatus, stopCurrentTimer } = useTimer()
 
   useEffect(() => {
     document.title = 'Pomo - Home'
@@ -84,10 +84,15 @@ export function Home() {
     }
   }
 
-  function handleButtonClick(event: MouseEvent) {
+  function handleButtonClick(
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+  ) {
     switch (timerStatus) {
       case 'idle':
-        event.preventDefault()
+        break
+
+      case 'onGoing':
+        stopCurrentTimer()
         break
     }
   }
@@ -119,7 +124,7 @@ export function Home() {
       <Timer />
       <StartButton
         timerStatus={timerStatus}
-        disabled={isStartButtonDisabled}
+        disabled={false}
         onClick={(event) => {
           handleButtonClick(event)
         }}

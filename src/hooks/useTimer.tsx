@@ -1,3 +1,5 @@
+import { differenceInSeconds } from 'date-fns'
+
 import {
   createContext,
   ReactNode,
@@ -26,6 +28,7 @@ export type timerStatusTypes = 'idle' | 'stopped' | 'onGoing' | 'over'
 interface timerContextInterface {
   timerTimeToDisplay: string
   timerStatus: timerStatusTypes
+  stopCurrentTimer: () => void
   addNewTimerToTimersList: (arg: baseTimer) => void
 }
 
@@ -75,7 +78,7 @@ export function TimerProvider({ children }: TimerProviderProps) {
     const timer: timerCompleted = {
       id,
       ...incomingTimer,
-      startDate: new Date()
+      startDate: new Date(),
     }
 
     setTimersList((state) => [...state, timer])
@@ -83,30 +86,55 @@ export function TimerProvider({ children }: TimerProviderProps) {
     setCurrentTimerId(id)
   }
 
-  function startCurrentTimerCountdown() {
-    if (currentTimerId !== null) {
-      setTimerStatus('onGoing')
-      const countdown = setInterval(() => {
-        if (currentTimerTimeLeftInSeconds > 0) {
-          setCurrentTimerSecondsPassed((state) => state + 1)
-        } else {
-          if (currentTimerTimeLeftInSeconds === 0) {
-            console.log('Entrou no if de clear interval')
-            clearInterval(countdown)
-            setTimerStatus('over')
-          }
-        }
-      }, 1000)
+  function stopCurrentTimer() {
+    const timerListWithoutCurrentTimer = timersList.filter(
+      (timer) => timer.id !== currentTimerId,
+    )
+
+    const currentTimerStopped: timerCompleted = {
+      ...currentTimer!,
+      stoppedDate: new Date(),
     }
+
+    setTimersList([...timerListWithoutCurrentTimer, currentTimerStopped])
   }
 
   useEffect(() => {
-    startCurrentTimerCountdown()
-  }, [currentTimerId])
+    if (currentTimer !== null) {
+      if (currentTimer?.stoppedDate) {
+        setTimerStatus('stopped')
+      } else {
+        const countdown = setInterval(() => {
+          const differenceSeconds = differenceInSeconds(
+            new Date(),
+            currentTimer!.startDate,
+          )
+
+          const timerOnLimit = differenceSeconds <= currentTimer!.duration * 60
+
+          console.log(currentTimer?.stoppedDate)
+
+          if (timerOnLimit) {
+            setCurrentTimerSecondsPassed(differenceSeconds)
+          } else {
+            clearInterval(countdown)
+            setTimerStatus('over')
+          }
+        }, 1000)
+
+        setTimerStatus('onGoing')
+      }
+    }
+  }, [currentTimer])
 
   return (
     <timerContext.Provider
-      value={{ addNewTimerToTimersList, timerTimeToDisplay, timerStatus }}
+      value={{
+        addNewTimerToTimersList,
+        timerTimeToDisplay,
+        timerStatus,
+        stopCurrentTimer,
+      }}
     >
       {children}
     </timerContext.Provider>
