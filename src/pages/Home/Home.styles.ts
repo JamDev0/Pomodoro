@@ -20,7 +20,13 @@ const buttonStyleBasedOnTimerStatus = {
       cursor: not-allowed;
     }
   `,
-  stopped: css``,
+  stopped: css`
+      background-color: ${(props) => props.theme.colors.product.green[500]};
+
+    &:hover {
+      background-color: ${(props) => props.theme.colors.product.green[600]};
+    }
+  `,
   onGoing: css`
     background-color: ${(props) => props.theme.colors.feedback.red[500]};
 
