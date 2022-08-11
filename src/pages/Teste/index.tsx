@@ -1,13 +1,37 @@
 import { useEffect, useState } from 'react'
 
 export function Teste() {
-  useEffect(() => {}, [])
+  const [itShouldGo, setItShouldGo] = useState<boolean>(true)
+
+  const [test, setTest] = useState<number | null>(null)
+
+  console.log('Teste: ' ,test)
+
+  useEffect(() => {
+
+  }, [])
 
   return (
     <>
-      <button onClick={() => {}}>Play</button>
+      <button onClick={() => {
+        if(itShouldGo) {
+          const interval = setInterval(() => {
+            console.log('Se passaram 1s')
+          }, 1000)
 
-      <button onClick={() => {}}>Teste</button>
+          setTest(interval)
+        }
+      }}>
+        Play
+      </button>
+
+      <button onClick={() => {
+        if(test) {
+          clearInterval(test)
+        }
+      }}>
+        Stop
+      </button>
     </>
   )
 }
