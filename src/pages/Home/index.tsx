@@ -14,11 +14,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useTimer } from '../../hooks/useTimer'
 
 export function Home() {
-  const { addNewTimerToTimersList, timerStatus, stopCurrentTimer } = useTimer()
-
-  useEffect(() => {
-    document.title = 'Pomo - Home'
-  }, [])
+  const { addNewTimerToTimersList, timerStatus, stopCurrentTimer, continueCurrentTimer } = useTimer()
 
   const startTimerFormValidationSchema = zod.object({
     taskName: zod.string().min(1),
@@ -43,6 +39,10 @@ export function Home() {
 
   const isStartButtonDisabled =
     watchedDuration === undefined || watchedTaskName === ''
+
+  useEffect(() => {
+    document.title = 'Pomo - Home'
+  }, [])
 
   function handleStartTimerFormSubmission(data: startTimerFormTypes) {
     addNewTimerToTimersList(data)
@@ -92,7 +92,13 @@ export function Home() {
         break
 
       case 'onGoing':
+        event.preventDefault()
         stopCurrentTimer()
+        break
+
+      case 'stopped':
+        event.preventDefault()
+        continueCurrentTimer()
         break
     }
   }

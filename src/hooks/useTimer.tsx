@@ -17,19 +17,22 @@ interface baseTimer {
   duration: number
 }
 
+export type timerStatusTypes = 'idle' | 'stopped' | 'onGoing' | 'over'
+
 interface timerCompleted extends baseTimer {
   id: string
   startDate: Date
-  stoppedDate?: Date
+  status: timerStatusTypes // Adicionar uma nova propriedade para dizer qual a atual ação que o timer deve executar(continuar ou parar)
+  restartStartDate?: Date
 }
 
-export type timerStatusTypes = 'idle' | 'stopped' | 'onGoing' | 'over'
 
 interface timerContextInterface {
   timerTimeToDisplay: string
   timerStatus: timerStatusTypes
   stopCurrentTimer: () => void
   addNewTimerToTimersList: (arg: baseTimer) => void
+  continueCurrentTimer: () => void
 }
 
 const timerContext = createContext<timerContextInterface>(
@@ -39,9 +42,9 @@ const timerContext = createContext<timerContextInterface>(
 export function TimerProvider({ children }: TimerProviderProps) {
   const [timersList, setTimersList] = useState<timerCompleted[]>([])
 
-  const [currentTimerId, setCurrentTimerId] = useState<string | null>(null)
+  const [currentTimerId, setCurrentTimerId] = useState<string | null>(null)  
 
-  const [timerStatus, setTimerStatus] = useState<timerStatusTypes>('idle')
+  const [countdownIntervalId, setCountdownIntervalId] = useState<number | null>(null)
 
   const currentTimer = currentTimerId
     ? timersList.find((timer) => timer.id === currentTimerId)
@@ -72,6 +75,8 @@ export function TimerProvider({ children }: TimerProviderProps) {
   const timerTimeToDisplay =
     currentTimerMinutesLeftFormatted + currentTimerSecondsLeftFormatted
 
+  const timerStatus: timerStatusTypes = currentTimer ? currentTimer.status : 'idle'
+
   function addNewTimerToTimersList(incomingTimer: baseTimer) {
     const id = String(new Date().getTime())
 
@@ -79,6 +84,7 @@ export function TimerProvider({ children }: TimerProviderProps) {
       id,
       ...incomingTimer,
       startDate: new Date(),
+      status: 'idle'
     }
 
     setTimersList((state) => [...state, timer])
@@ -87,43 +93,106 @@ export function TimerProvider({ children }: TimerProviderProps) {
   }
 
   function stopCurrentTimer() {
+    changeCurrentTimerStatus(currentTimer!, 'stopped')
+
+    clearInterval(countdownIntervalId!)
+  }
+
+  function changeCurrentTimerStatus(innerCurrentTimer: timerCompleted, status: timerCompleted['status']) {
     const timerListWithoutCurrentTimer = timersList.filter(
-      (timer) => timer.id !== currentTimerId,
+      (timer) => timer.id !== innerCurrentTimer.id,
     )
 
     const currentTimerStopped: timerCompleted = {
-      ...currentTimer!,
-      stoppedDate: new Date(),
+      ...innerCurrentTimer,
+      status: status,
     }
 
     setTimersList([...timerListWithoutCurrentTimer, currentTimerStopped])
   }
 
-  useEffect(() => {
-    if (currentTimer !== null) {
-      if (currentTimer?.stoppedDate) {
-        setTimerStatus('stopped')
-      } else {
-        const countdown = setInterval(() => {
-          const differenceSeconds = differenceInSeconds(
-            new Date(),
-            currentTimer!.startDate,
-          )
-
-          const timerOnLimit = differenceSeconds <= currentTimer!.duration * 60
-
-          console.log(currentTimer?.stoppedDate)
-
-          if (timerOnLimit) {
-            setCurrentTimerSecondsPassed(differenceSeconds)
-          } else {
-            clearInterval(countdown)
-            setTimerStatus('over')
-          }
-        }, 1000)
-
-        setTimerStatus('onGoing')
+  function continueCountdownFunction(innerCurrentTimer: timerCompleted) {
+    if(!innerCurrentTimer.restartStartDate) {
+      const timerListWithoutCurrentTimer = timersList.filter(
+        (timer) => timer.id !== currentTimerId,
+      )
+  
+      const currentTimerStopped: timerCompleted = {
+        ...innerCurrentTimer!,
+        restartStartDate: new Date()
       }
+  
+      setTimersList([...timerListWithoutCurrentTimer, currentTimerStopped])
+    } // Dar um jeito nisso, alocar esta parte corretamente
+
+    const countdown = setInterval(() => {
+      const differenceSeconds = differenceInSeconds(
+        new Date(),
+          innerCurrentTimer.restartStartDate!,
+        )
+        
+        const timerOnLimit = differenceSeconds <= innerCurrentTimer.duration * 60
+        
+      if (timerOnLimit) {
+        setCurrentTimerSecondsPassed((state) => differenceSeconds + state)
+      } else {
+        stopCurrentTimer()
+        changeCurrentTimerStatus(innerCurrentTimer, 'over')
+      }
+    }, 1000)
+    
+    setCountdownIntervalId(countdown)
+    
+    changeCurrentTimerStatus(innerCurrentTimer, 'onGoing')
+  }
+  
+  function initialCountdownFunction(innerCurrentTimer: timerCompleted) {
+    const countdown = setInterval(() => {
+      const differenceSeconds = differenceInSeconds(
+        new Date(),
+          innerCurrentTimer.startDate,
+        )
+        
+        const timerOnLimit = differenceSeconds <= innerCurrentTimer.duration * 60
+        
+        if (timerOnLimit) {
+        setCurrentTimerSecondsPassed(differenceSeconds)
+      } else {
+        stopCurrentTimer()
+        changeCurrentTimerStatus(innerCurrentTimer, 'over')
+      }
+    }, 1000)
+    
+    setCountdownIntervalId(countdown)
+    
+    changeCurrentTimerStatus(innerCurrentTimer, 'onGoing')
+  }
+
+  function continueCurrentTimer() {
+    const innerTimer = timersList ? timersList.find((timer) => timer.id === currentTimerId) : null
+
+    if(innerTimer) {
+      continueCountdownFunction(innerTimer)
+    }
+  }
+  
+  useEffect(() => {
+    console.log('current timer: ', currentTimer)
+    switch(currentTimer?.status) {
+      case 'idle':
+        initialCountdownFunction(currentTimer)
+        break
+
+      case 'onGoing':
+        stopCurrentTimer()
+        break
+      
+      case 'over':
+        break
+      
+      case 'stopped':
+        continueCurrentTimer()
+        break
     }
   }, [currentTimer])
 
@@ -134,6 +203,7 @@ export function TimerProvider({ children }: TimerProviderProps) {
         timerTimeToDisplay,
         timerStatus,
         stopCurrentTimer,
+        continueCurrentTimer,
       }}
     >
       {children}
