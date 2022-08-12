@@ -14,7 +14,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useTimer } from '../../hooks/useTimer'
 
 export function Home() {
-  const { addNewTimerToTimersList, timerStatus, stopCurrentTimer, continueCurrentTimer } = useTimer()
+  const { addNewTimerToTimersList, timerStatus, setContinueProps, setStopProps } = useTimer()
 
   const startTimerFormValidationSchema = zod.object({
     taskName: zod.string().min(1),
@@ -93,12 +93,12 @@ export function Home() {
 
       case 'onGoing':
         event.preventDefault()
-        stopCurrentTimer()
+        setStopProps()
         break
 
       case 'stopped':
         event.preventDefault()
-        continueCurrentTimer()
+        setContinueProps()
         break
     }
   }
