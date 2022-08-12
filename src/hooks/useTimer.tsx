@@ -84,7 +84,8 @@ export function TimerProvider({ children }: TimerProviderProps) {
       id,
       ...incomingTimer,
       startDate: new Date(),
-      status: 'idle',
+      continueDate: new Date(),
+      status: 'onGoing',
     }
 
     setTimersList((state) => [...state, timer])
@@ -92,116 +93,89 @@ export function TimerProvider({ children }: TimerProviderProps) {
     setCurrentTimerId(id)
   }
 
-  function changeCurrentTimerStatus(innerCurrentTimer: timerCompleted, status: timerCompleted['status']) {
-    const timerListWithoutCurrentTimer = timersList.filter(
-      (timer) => timer.id !== innerCurrentTimer.id,
-    )
-
-    const currentTimerStopped: timerCompleted = {
-      ...innerCurrentTimer,
-      status: status,
-    }
-
-    setTimersList([...timerListWithoutCurrentTimer, currentTimerStopped])
-  }
-
   function continueCountdown() {
     const countdown = setInterval(() => {
       const differenceSeconds = differenceInSeconds(
-        new Date(),
+          new Date(),
           currentTimer!.continueDate!,
         )
         
         const timerOnLimit = differenceSeconds <= currentTimer!.duration * 60
         
-      if (timerOnLimit) {
-        setCurrentTimerSecondsPassed((state) => differenceSeconds + state)
-      } else {
-        console.log('Over')
-        changeCurrentTimerStatus(currentTimer!, 'over')
-      }
-    }, 1000)
-    
-    setCountdownIntervalId(countdown)
-  }
-
-  function startCountdown() {
-    const countdown = setInterval(() => {
-      const differenceSeconds = differenceInSeconds(
-        new Date(),
-          currentTimer!.startDate,
-        )
-        
-        const timerOnLimit = differenceSeconds <= currentTimer!.duration * 60
-        
         if (timerOnLimit) {
-        setCurrentTimerSecondsPassed(differenceSeconds)
-      } else {
-        console.log('Over')
-        changeCurrentTimerStatus(currentTimer!, 'over')
-      }
-    }, 1000)
+          setCurrentTimerSecondsPassed((state: number) => state > 0 ? state + differenceSeconds : differenceSeconds) // Esta dando erro pois esta somando o valor do estado
+        } else {
+          console.log('Over')
+          changeCurrentTimerStatus(currentTimer!, 'over')
+        }
+      }, 1000)
+      
+      setCountdownIntervalId(countdown)
+    }
     
-    setCountdownIntervalId(countdown)
-  }
-  
-  function start() {
-    startCountdown()
-  }
-
-  function stop() {
-    clearInterval(countdownIntervalId!)
-  }
-
-  function proceed() {
-    continueCountdown()
-  }
-  
-  function setContinueProps() {
-    if(currentTimer) {
-      const timerListWithoutCurrentTimer = timersList.filter(
-        (timer) => timer.id !== currentTimer.id,
-      )
-      
-      const currentTimerStopped: timerCompleted = {
-        ...currentTimer,
-        status: 'onGoing',
-        continueDate: new Date(),
+    function stop() {
+      clearInterval(countdownIntervalId!)
+    }
+    
+    function proceed() {
+      continueCountdown()
+    }
+    
+    function setContinueProps() {
+      if(currentTimer) {
+        const timerListWithoutCurrentTimer = timersList.filter(
+          (timer) => timer.id !== currentTimer.id,
+          )
+          
+          const currentTimerStopped: timerCompleted = {
+            ...currentTimer,
+            status: 'onGoing',
+            continueDate: new Date(),
+          }
+          
+          setTimersList([...timerListWithoutCurrentTimer, currentTimerStopped])
+        }
       }
       
-      setTimersList([...timerListWithoutCurrentTimer, currentTimerStopped])
-    }
-  }
-  
-  function setStopProps() {
-    if(currentTimer) {
-      const timerListWithoutCurrentTimer = timersList.filter(
-        (timer) => timer.id !== currentTimer.id,
-      )
-      
-      const currentTimerStopped: timerCompleted = {
-        ...currentTimer,
-        status: 'stopped',
-        continueDate: null,
+      function setStopProps() {
+        if(currentTimer) {
+          const timerListWithoutCurrentTimer = timersList.filter(
+            (timer) => timer.id !== currentTimer.id,
+            )
+            
+            const currentTimerStopped: timerCompleted = {
+              ...currentTimer,
+              status: 'stopped',
+              continueDate: null,
+            }
+            
+            setTimersList([...timerListWithoutCurrentTimer, currentTimerStopped])
+          }
+        }
+        
+      function changeCurrentTimerStatus(innerCurrentTimer: timerCompleted, status: timerCompleted['status']) {
+        const timerListWithoutCurrentTimer = timersList.filter(
+          (timer) => timer.id !== innerCurrentTimer.id,
+        )
+    
+        const currentTimerStopped: timerCompleted = {
+          ...innerCurrentTimer,
+          status: status,
+        }
+    
+        setTimersList([...timerListWithoutCurrentTimer, currentTimerStopped])
       }
       
-      setTimersList([...timerListWithoutCurrentTimer, currentTimerStopped])
-    }
-  }
-
-  useEffect(() => {
-    if(currentTimer) {
+        useEffect(() => {
+          if(currentTimer) {
       switch(currentTimer.status) {
         case 'onGoing':
           proceed()
+          console.log('Passou')
           break
 
         case 'stopped':
           stop()
-          break
-        
-        case 'idle':
-          start()
           break
         
         case 'over':
