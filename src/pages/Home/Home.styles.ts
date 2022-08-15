@@ -30,6 +30,9 @@ const buttonStyleBasedOnTimerStatus = {
   onGoing: css`
     background-color: ${(props) => props.theme.colors.feedback.red[500]};
 
+    flex-grow: 1;
+    flex-shrink: 1;
+
     &:hover {
       background-color: ${(props) => props.theme.colors.feedback.red[600]};
     }
@@ -56,7 +59,7 @@ export const HomeContainer = styled.form`
   margin-top: 20px;
 `
 
-export const StartButton = styled.button<StartButtonParams>`
+const baseButton = styled.button`
   width: 100%;
 
   display: flex;
@@ -81,10 +84,37 @@ export const StartButton = styled.button<StartButtonParams>`
     width: 1.5rem;
     height: 1.5rem;
   }
+`
 
+export const OnGoingButtonsContainer = styled.div`
+  display: flex;
+  column-gap: 0.5rem;
+
+  width: 100%;
+`
+
+export const StartButton = styled(baseButton)<StartButtonParams>`
   ${(props) => {
     return buttonStyleBasedOnTimerStatus[props.timerStatus]
   }}
+`
+
+export const CancelButton = styled(baseButton)`
+  width: 30%;
+
+  background-color: transparent;
+
+  border: 2px ${(params) => params.theme.colors.feedback.red[500]} solid;
+
+  color: ${(params) => params.theme.colors.base.text};
+
+  opacity: 0.6;
+
+  :hover {
+    color: ${(params) => params.theme.colors.base.title};
+
+    opacity: 1;
+  }
 `
 
 const FadeOutTimerTitleAnimation = keyframes`

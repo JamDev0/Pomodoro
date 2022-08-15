@@ -19,7 +19,7 @@ interface baseTimer {
 
 export type timerStatusTypes = 'idle' | 'stopped' | 'onGoing' | 'over'
 
-interface timerCompleted extends baseTimer {
+export interface timerCompleted extends baseTimer {
   id: string
   startDate: Date
   status: timerStatusTypes
@@ -35,6 +35,7 @@ interface timerContextInterface {
   setContinueProps: () => void
   addNewTimerToTimersList: (arg: baseTimer) => void
   removeTimer: () => void
+  cancelTimer: () => void
 }
 
 const timerContext = createContext<timerContextInterface>(
@@ -191,6 +192,14 @@ export function TimerProvider({ children }: TimerProviderProps) {
     setTimerSecondsPassed(0)
   }
 
+  function cancelTimer() {
+    clearInterval(countdownIntervalId!)
+
+    setTimerId(null)
+
+    setTimerSecondsPassed(0)
+  }
+
   useEffect(() => {
     if (timer) {
       switch (timer.status) {
@@ -219,6 +228,7 @@ export function TimerProvider({ children }: TimerProviderProps) {
         setStopProps,
         timer,
         removeTimer,
+        cancelTimer,
       }}
     >
       {children}

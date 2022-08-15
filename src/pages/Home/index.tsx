@@ -2,7 +2,7 @@ import { ArrowFatLinesRight, HandPalm, Play, Plus } from 'phosphor-react'
 import React from 'react'
 import { useForm } from 'react-hook-form'
 import { Timer } from './components/Timer'
-import { HomeContainer, StartButton, TimerTitle } from './Home.styles'
+import { CancelButton, HomeContainer, OnGoingButtonsContainer, StartButton, TimerTitle } from './Home.styles'
 import * as zod from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useTimer } from '../../hooks/useTimer'
@@ -16,6 +16,7 @@ export function Home() {
     setStopProps,
     timer,
     removeTimer,
+    cancelTimer,
   } = useTimer()
 
   const startTimerFormValidationSchema = zod.object({
@@ -43,6 +44,8 @@ export function Home() {
 
   const isStartButtonDisabled =
     timerStatus === 'idle' ? watchedTaskName === '' || !watchedDuration : false
+
+  const showCancelButton = timerStatus === 'onGoing' || timerStatus === 'stopped'
 
   const basePageTitle = 'Pomo'
 
@@ -123,15 +126,34 @@ export function Home() {
       )}
 
       <Timer />
-      <StartButton
-        timerStatus={timerStatus}
-        disabled={isStartButtonDisabled}
-        onClick={(event) => {
-          handleButtonClick(event)
-        }}
-      >
-        {defineButtonContentBasedOnTimerStatus()}
-      </StartButton>
+      {
+        showCancelButton
+        ? <OnGoingButtonsContainer>
+            <StartButton
+              timerStatus={timerStatus}
+              disabled={isStartButtonDisabled}
+              onClick={(event) => {
+                handleButtonClick(event)
+              }}
+            >
+              {defineButtonContentBasedOnTimerStatus()}
+            </StartButton>
+            <CancelButton
+              onClick={cancelTimer}
+            >
+              Cancelar
+            </CancelButton>
+          </OnGoingButtonsContainer>
+        : <StartButton
+            timerStatus={timerStatus}
+            disabled={isStartButtonDisabled}
+            onClick={(event) => {
+              handleButtonClick(event)
+            }}
+          >
+            {defineButtonContentBasedOnTimerStatus()}
+          </StartButton>
+      }
     </HomeContainer>
   )
 }
