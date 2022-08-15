@@ -1,6 +1,19 @@
-import styled from 'styled-components'
+import styled, { css, keyframes } from 'styled-components'
 
-export const NumberContainer = styled.span`
+interface NumberContainerParams {
+  blink: boolean
+}
+
+const textBlinkAnimation = (initialColor: string) => keyframes`
+  0% {
+              color: ${initialColor};
+            }
+            100% {
+              color: transparent;
+            }
+`
+
+export const NumberContainer = styled.span<NumberContainerParams>`
   height: auto;
 
   display: flex;
@@ -13,7 +26,18 @@ export const NumberContainer = styled.span`
 
   font-size: 10rem;
   font-weight: 700;
-  color: ${(props) => props.theme.colors.base.title};
+  color: ${(params) => params.theme.colors.base.title};
 
-  background-color: ${(props) => props.theme.colors.base.elements.secondary};
+  background-color: ${(params) => params.theme.colors.base.elements.secondary};
+
+  ${(params) =>
+    params.blink
+      ? css`
+          animation-name: ${textBlinkAnimation(params.theme.colors.base.title)};
+          animation-duration: 550ms;
+          animation-iteration-count: infinite;
+          animation-direction: alternate;
+          animation-timing-function: ease-in;
+        `
+      : css``}
 `
