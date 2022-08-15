@@ -1,4 +1,4 @@
-import styled, { css } from 'styled-components'
+import styled, { css, keyframes } from 'styled-components'
 
 import { timerStatusTypes } from '../../hooks/useTimer'
 
@@ -21,7 +21,7 @@ const buttonStyleBasedOnTimerStatus = {
     }
   `,
   stopped: css`
-      background-color: ${(props) => props.theme.colors.product.green[500]};
+    background-color: ${(props) => props.theme.colors.product.green[500]};
 
     &:hover {
       background-color: ${(props) => props.theme.colors.product.green[600]};
@@ -34,7 +34,13 @@ const buttonStyleBasedOnTimerStatus = {
       background-color: ${(props) => props.theme.colors.feedback.red[600]};
     }
   `,
-  over: css``,
+  over: css`
+    background-color: ${(props) => props.theme.colors.product.green[500]};
+
+    &:hover {
+      background-color: ${(props) => props.theme.colors.product.green[600]};
+    }
+  `,
 }
 
 export const HomeContainer = styled.form`
@@ -47,7 +53,7 @@ export const HomeContainer = styled.form`
   flex-grow: 1;
   flex-shrink: 1;
 
-  margin-top: 2.5rem;
+  margin-top: 20px;
 `
 
 export const StartButton = styled.button<StartButtonParams>`
@@ -81,59 +87,28 @@ export const StartButton = styled.button<StartButtonParams>`
   }}
 `
 
-export const InputsContainer = styled.div`
-  display: flex;
-  column-gap: 0.5rem;
-  align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-
-  font-size: 1.125rem;
-  font-weight: 500;
-  color: ${(props) => props.theme.colors.base.title};
-`
-
-const BaseInput = styled.input`
-  background-color: transparent;
-
-  padding: 5px 8px;
-
-  font-size: 1.125rem;
-
-  color: ${(props) => props.theme.colors.base.title};
-
-  border: 0;
-  border-bottom: 2px solid ${(props) => props.theme.colors.base.title};
-
-  &:focus {
-    box-shadow: none;
-
-    border-color: ${(props) => props.theme.colors.product.green[500]};
+const FadeOutTimerTitleAnimation = keyframes`
+  0% {
+    opacity: 1;
+    filter: brightness(1) grayscale(0);
   }
 
-  &:placeholder-shown:not(:focus) {
-    color: ${(props) => props.theme.colors.base.placeholder};
-
-    border-bottom-color: ${(props) => props.theme.colors.base.placeholder};
+  100% {
+    opacity: 0.6;
+    filter: brightness(0.6) grayscale(1);
   }
 `
 
-export const NameInput = styled(BaseInput)`
-  min-width: fit-content;
+export const TimerTitle = styled.h1`
+  font-size: 2.5rem;
+  color: ${(params) => params.theme.colors.base.title};
+  text-decoration: underline;
+  text-decoration-color: ${(params) => params.theme.colors.product.green[500]};
+  text-decoration-thickness: 1;
 
-  flex: 1;
-
-  &::placeholder {
-    min-width: fit-content;
-
-    flex: 1;
-  }
-
-  &::-webkit-calendar-picker-indicator {
-    display: none !important;
-  }
-`
-
-export const TimeInput = styled(BaseInput)`
-  width: 4rem;
+  animation-name: ${FadeOutTimerTitleAnimation};
+  animation-delay: 5s;
+  animation-duration: 300ms;
+  animation-timing-function: cubic-bezier(0.55, 0.085, 0.68, 0.53);
+  animation-fill-mode: forwards;
 `

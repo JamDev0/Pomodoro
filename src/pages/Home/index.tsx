@@ -1,20 +1,22 @@
 import { ArrowFatLinesRight, HandPalm, Play, Plus } from 'phosphor-react'
-import React, { useEffect } from 'react'
+import React from 'react'
 import { useForm } from 'react-hook-form'
 import { Timer } from './components/Timer'
-import {
-  HomeContainer,
-  InputsContainer,
-  NameInput,
-  StartButton,
-  TimeInput,
-} from './Home.styles'
+import { HomeContainer, StartButton, TimerTitle } from './Home.styles'
 import * as zod from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useTimer } from '../../hooks/useTimer'
+import { TimerInformationInputs } from './components/Timer/TimerInformationInputs'
 
 export function Home() {
-  const { addNewTimerToTimersList, timerStatus, setContinueProps, setStopProps } = useTimer()
+  const {
+    addNewTimerToTimersList,
+    timerStatus,
+    setContinueProps,
+    setStopProps,
+    timer,
+    removeTimer,
+  } = useTimer()
 
   const startTimerFormValidationSchema = zod.object({
     taskName: zod.string().min(1),
@@ -37,12 +39,16 @@ export function Home() {
 
   const watchedDuration = watch('duration')
 
-  const isStartButtonDisabled =
-    watchedDuration === undefined || watchedTaskName === ''
+  const timerHasInitialized = timer !== null
 
-  useEffect(() => {
-    document.title = 'Pomo - Home'
-  }, [])
+  const isStartButtonDisabled =
+    timerStatus === 'idle' ? watchedTaskName === '' || !watchedDuration : false
+
+  const basePageTitle = 'Pomo'
+
+  document.title = timerHasInitialized
+    ? `${basePageTitle} - ${timer!.taskName}`
+    : `${basePageTitle} - Home`
 
   function handleStartTimerFormSubmission(data: startTimerFormTypes) {
     addNewTimerToTimersList(data)
@@ -100,37 +106,26 @@ export function Home() {
         event.preventDefault()
         setContinueProps()
         break
+
+      case 'over':
+        event.preventDefault()
+        removeTimer()
+        break
     }
   }
 
   return (
     <HomeContainer onSubmit={handleSubmit(handleStartTimerFormSubmission)}>
-      <InputsContainer>
-        <span>Vou trabalhar em</span>
-        <NameInput
-          type="text"
-          placeholder="Dê um nome para seu projeto"
-          list="task-sugestions"
-          {...register('taskName')}
-        ></NameInput>
+      {timerHasInitialized ? (
+        <TimerTitle>{timer!.taskName}</TimerTitle>
+      ) : (
+        <TimerInformationInputs register={register} />
+      )}
 
-        <datalist id="task-sugestions"></datalist>
-
-        <span>durante</span>
-        <TimeInput
-          step={5}
-          min={5}
-          max={60}
-          type="number"
-          placeholder="00"
-          {...register('duration', { valueAsNumber: true })}
-        ></TimeInput>
-        <span>minutos.</span>
-      </InputsContainer>
       <Timer />
       <StartButton
         timerStatus={timerStatus}
-        disabled={false}
+        disabled={isStartButtonDisabled}
         onClick={(event) => {
           handleButtonClick(event)
         }}
