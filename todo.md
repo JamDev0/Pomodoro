@@ -1,1 +1,0 @@
-[] - Adicionar a função de cancelar o timer atual
