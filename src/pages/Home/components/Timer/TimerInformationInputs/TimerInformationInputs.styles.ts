@@ -23,7 +23,7 @@ const BaseInput = styled.input`
 
   border: 0;
   border-bottom: 2px solid ${(props) => props.theme.colors.base.title};
-
+  
   &:focus {
     box-shadow: none;
 
