@@ -1,11 +1,18 @@
-import { createContext, ReactNode, useContext, useState } from 'react'
+import {
+  createContext,
+  Dispatch,
+  ReactNode,
+  SetStateAction,
+  useContext,
+  useState,
+} from 'react'
 
 import { useNavigate } from 'react-router-dom'
 
 interface navigationContextInterface {
   currentPage: string
   handleNavigation: (arg: string) => void
-  setCurrentPage: () => void
+  setCurrentPage: Dispatch<SetStateAction<string>>
 }
 
 interface NavigationProviderProps {
