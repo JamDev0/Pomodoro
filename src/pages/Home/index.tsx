@@ -2,7 +2,13 @@ import { ArrowFatLinesRight, HandPalm, Play, Plus } from 'phosphor-react'
 import React from 'react'
 import { useForm } from 'react-hook-form'
 import { Timer } from './components/Timer'
-import { CancelButton, HomeContainer, OnGoingButtonsContainer, StartButton, TimerTitle } from './Home.styles'
+import {
+  CancelButton,
+  HomeContainer,
+  OnGoingButtonsContainer,
+  StartButton,
+  TimerTitle,
+} from './Home.styles'
 import * as zod from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useTimer } from '../../hooks/useTimer'
@@ -45,13 +51,17 @@ export function Home() {
   const isStartButtonDisabled =
     timerStatus === 'idle' ? watchedTaskName === '' || !watchedDuration : false
 
-  const showCancelButton = timerStatus === 'onGoing' || timerStatus === 'stopped'
+  const showCancelButton =
+    timerStatus === 'onGoing' || timerStatus === 'stopped'
 
   const basePageTitle = 'Pomo'
 
   document.title = timerHasInitialized
     ? `${basePageTitle} - ${timer!.taskName}`
     : `${basePageTitle} - Home`
+
+  document.title =
+    timerStatus === 'over' ? document.title + ' Acabou!' : document.title
 
   function handleStartTimerFormSubmission(data: startTimerFormTypes) {
     addNewTimerToTimersList(data)
@@ -71,7 +81,7 @@ export function Home() {
         return (
           <>
             <HandPalm />
-            Interromper
+            Pausar
           </>
         )
 
@@ -126,25 +136,9 @@ export function Home() {
       )}
 
       <Timer />
-      {
-        showCancelButton
-        ? <OnGoingButtonsContainer>
-            <StartButton
-              timerStatus={timerStatus}
-              disabled={isStartButtonDisabled}
-              onClick={(event) => {
-                handleButtonClick(event)
-              }}
-            >
-              {defineButtonContentBasedOnTimerStatus()}
-            </StartButton>
-            <CancelButton
-              onClick={cancelTimer}
-            >
-              Cancelar
-            </CancelButton>
-          </OnGoingButtonsContainer>
-        : <StartButton
+      {showCancelButton ? (
+        <OnGoingButtonsContainer>
+          <StartButton
             timerStatus={timerStatus}
             disabled={isStartButtonDisabled}
             onClick={(event) => {
@@ -153,7 +147,19 @@ export function Home() {
           >
             {defineButtonContentBasedOnTimerStatus()}
           </StartButton>
-      }
+          <CancelButton onClick={cancelTimer}>Cancelar</CancelButton>
+        </OnGoingButtonsContainer>
+      ) : (
+        <StartButton
+          timerStatus={timerStatus}
+          disabled={isStartButtonDisabled}
+          onClick={(event) => {
+            handleButtonClick(event)
+          }}
+        >
+          {defineButtonContentBasedOnTimerStatus()}
+        </StartButton>
+      )}
     </HomeContainer>
   )
 }

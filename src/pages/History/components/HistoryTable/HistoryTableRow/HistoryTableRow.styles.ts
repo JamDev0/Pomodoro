@@ -1,12 +1,10 @@
-import styled from "styled-components";
+import styled from 'styled-components'
 
 export const HistoryTableRowContainer = styled.tr`
   td {
-    border-top: 4px solid
-      ${(props) => props.theme.colors.base.elements.primary};
+    border-top: 4px solid ${(props) => props.theme.colors.base.elements.primary};
 
-    background-color: ${(props) =>
-      props.theme.colors.base.elements.secondary};
+    background-color: ${(props) => props.theme.colors.base.elements.secondary};
 
     font-size: 0.875rem;
     font-weight: 400;

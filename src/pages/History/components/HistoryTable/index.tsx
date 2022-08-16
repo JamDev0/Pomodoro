@@ -1,7 +1,10 @@
+import { useTimer } from '../../../../hooks/useTimer'
 import { HistoryTableContainer } from './HistoryTable.styles'
-import { Status } from './Status'
+import { HistoryTableRow } from './HistoryTableRow'
 
 export function HistoryTable() {
+  const { timersList } = useTimer()
+
   return (
     <HistoryTableContainer>
       <table>
@@ -14,20 +17,9 @@ export function HistoryTable() {
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>Correção de erros</td>
-            <td>25 minutos</td>
-            <td>Há cerca de 2 meses</td>
-            <td>Concluido</td>
-          </tr>
-          <tr>
-            <td>Correção de erros</td>
-            <td>25 minutos</td>
-            <td>Há cerca de 2 meses</td>
-            <td>
-              <Status />
-            </td>
-          </tr>
+          {timersList.map((timer) => {
+            return <HistoryTableRow {...timer} key={timer.id} />
+          })}
         </tbody>
       </table>
     </HistoryTableContainer>

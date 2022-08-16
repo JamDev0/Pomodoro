@@ -17,7 +17,12 @@ interface baseTimer {
   duration: number
 }
 
-export type timerStatusTypes = 'idle' | 'stopped' | 'onGoing' | 'over'
+export type timerStatusTypes =
+  | 'idle'
+  | 'stopped'
+  | 'onGoing'
+  | 'over'
+  | 'canceled'
 
 export interface timerCompleted extends baseTimer {
   id: string
@@ -31,6 +36,7 @@ interface timerContextInterface {
   timerTimeToDisplay: string
   timerStatus: timerStatusTypes
   timer: timerCompleted | null | undefined
+  timersList: timerCompleted[] | []
   setStopProps: () => void
   setContinueProps: () => void
   addNewTimerToTimersList: (arg: baseTimer) => void
@@ -85,7 +91,7 @@ export function TimerProvider({ children }: TimerProviderProps) {
       status: 'onGoing',
     }
 
-    setTimersList((state) => [...state, timer])
+    setTimersList((state) => [timer, ...state])
 
     setTimerId(id)
   }
@@ -195,6 +201,8 @@ export function TimerProvider({ children }: TimerProviderProps) {
   function cancelTimer() {
     clearInterval(countdownIntervalId!)
 
+    changeTimerStatus(timer!, 'canceled')
+
     setTimerId(null)
 
     setTimerSecondsPassed(0)
@@ -229,6 +237,7 @@ export function TimerProvider({ children }: TimerProviderProps) {
         timer,
         removeTimer,
         cancelTimer,
+        timersList,
       }}
     >
       {children}

@@ -1,19 +1,22 @@
 import styled, { css } from 'styled-components'
+import { timerStatusTypes } from '../../../../../hooks/useTimer'
 
 interface StatusParams {
-  currentStatus: 'Concluded' | 'Stopped' | 'On going'
+  currentStatus: timerStatusTypes
 }
 
 const statusIndicatorColors = {
-  Concluded: css`
-    ${(props) => props.theme.colors.product.green[500]}
+  over: css`
+    ${(params) => params.theme.colors.product.green[500]}
   `,
-  Stopped: css`
-    ${(props) => props.theme.colors.feedback.red[500]}
+  canceled: css`
+    ${(params) => params.theme.colors.feedback.red[500]}
   `,
-  'On going': css`
-    ${(props) => props.theme.colors.feedback.yellow[500]}
+  onGoing: css`
+    ${(params) => params.theme.colors.feedback.yellow[500]}
   `,
+  idle: css``,
+  stopped: css``,
 }
 
 export const StatusContainer = styled.span<StatusParams>`
@@ -22,8 +25,8 @@ export const StatusContainer = styled.span<StatusParams>`
   column-gap: 0.5rem;
 
   svg {
-    fill: ${(props) => {
-      return statusIndicatorColors[props.currentStatus]
+    fill: ${(params) => {
+      return statusIndicatorColors[params.currentStatus]
     }};
   }
 `
