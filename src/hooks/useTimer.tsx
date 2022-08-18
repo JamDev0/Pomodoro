@@ -1,12 +1,16 @@
 import { differenceInSeconds } from 'date-fns'
 
+import { timerReducer } from '../reducers/timer/reducer'
+
 import {
   createContext,
   ReactNode,
   useContext,
   useEffect,
+  useReducer,
   useState,
 } from 'react'
+import { actionTypes, startAction } from '../reducers/timer/actions'
 
 interface TimerProviderProps {
   children: ReactNode
@@ -49,21 +53,19 @@ const timerContext = createContext<timerContextInterface>(
 )
 
 export function TimerProvider({ children }: TimerProviderProps) {
-  const [timersList, setTimersList] = useState<timerCompleted[]>([])
+  const [{ countdownIntervalId, timerId, timerSecondsPassed, timersList}, dispatch ] = useReducer(timerReducer, {
+    timersList: [],
+    timerId: null,
+    countdownIntervalId: null,
+    timerSecondsPassed: 0,
+  })
 
-  const [timerId, setTimerId] = useState<string | null>(null)
-
-  const [countdownIntervalId, setCountdownIntervalId] = useState<number | null>(
-    null,
-  )
 
   const timer = timerId
     ? timersList.find((timer) => timer.id === timerId)
     : null
 
   const timerDurationInSeconds = timer ? timer.duration * 60 : 0
-
-  const [timerSecondsPassed, setTimerSecondsPassed] = useState<number>(0)
 
   const timerTimeLeftInSeconds = timerDurationInSeconds - timerSecondsPassed
 
@@ -80,157 +82,10 @@ export function TimerProvider({ children }: TimerProviderProps) {
 
   const timerStatus: timerStatusTypes = timer ? timer.status : 'idle'
 
-  function addNewTimerToTimersList(incomingTimerData: baseTimer) {
-    const id = String(new Date().getTime())
-
-    const timer: timerCompleted = {
-      id,
-      ...incomingTimerData,
-      startDate: new Date(),
-      continueDate: new Date(),
-      status: 'onGoing',
-    }
-
-    setTimersList((state) => [timer, ...state])
-
-    setTimerId(id)
+  function startTimer() { 
+    dispatch(startAction())
+    // pegar os valores vindo do app
   }
-
-  function setStopProps() {
-    if (timer) {
-      const timersListWithoutTimer = timersList.filter(
-        (innerTimer) => timer.id !== innerTimer.id,
-      )
-
-      const TimerStopped: timerCompleted = {
-        ...timer,
-        status: 'stopped',
-        timeAlreadyPassed: timerSecondsPassed,
-        continueDate: null,
-      }
-
-      setTimersList([...timersListWithoutTimer, TimerStopped])
-    }
-  }
-
-  function setContinueProps() {
-    if (timer) {
-      const timersListWithoutTimer = timersList.filter(
-        (innerTimer) => timer.id !== innerTimer.id,
-      )
-
-      const TimerContinued: timerCompleted = {
-        ...timer,
-        status: 'onGoing',
-        continueDate: new Date(),
-      }
-
-      setTimersList([...timersListWithoutTimer, TimerContinued])
-    }
-  }
-
-  function stop() {
-    clearInterval(countdownIntervalId!)
-  }
-
-  function proceed() {
-    if (timerSecondsPassed === 0) {
-      initialCountdown()
-    } else {
-      continueCountdown()
-    }
-  }
-
-  function initialCountdown() {
-    const countdown = setInterval(() => {
-      const timePassed = differenceInSeconds(new Date(), timer!.startDate!)
-
-      const timerOnLimit = timePassed <= timerDurationInSeconds
-
-      if (timerOnLimit) {
-        setTimerSecondsPassed(timePassed)
-      } else {
-        console.log('Over')
-        changeTimerStatus(timer!, 'over')
-      }
-    }, 1000)
-
-    setCountdownIntervalId(countdown)
-  }
-
-  function continueCountdown() {
-    const countdown = setInterval(() => {
-      const timePassed =
-        differenceInSeconds(new Date(), timer!.continueDate!) +
-        timer!.timeAlreadyPassed!
-
-      const timerOnLimit = timePassed <= timerDurationInSeconds
-
-      if (timerOnLimit) {
-        setTimerSecondsPassed(timePassed)
-      } else {
-        console.log('Over')
-        changeTimerStatus(timer!, 'over')
-      }
-    }, 1000)
-
-    setCountdownIntervalId(countdown)
-  }
-
-  function changeTimerStatus(
-    innerTimer: timerCompleted,
-    status: timerCompleted['status'],
-  ) {
-    const timerListWithoutTimer = timersList.filter(
-      (timer) => timer.id !== innerTimer.id,
-    )
-
-    const TimerStopped: timerCompleted = {
-      ...innerTimer,
-      status,
-    }
-
-    setTimersList([...timerListWithoutTimer, TimerStopped])
-  }
-
-  function removeTimer() {
-    setTimerId(null)
-    setTimerSecondsPassed(0)
-  }
-
-  function cancelTimer() {
-    clearInterval(countdownIntervalId!)
-
-    changeTimerStatus(timer!, 'canceled')
-
-    setTimerId(null)
-
-    setTimerSecondsPassed(0)
-  }
-
-  useEffect(() => {
-    if (timer) {
-      switch (timer.status) {
-        case 'onGoing':
-          proceed()
-          break
-
-        case 'stopped':
-          stop()
-          break
-
-        case 'over':
-          stop()
-          break
-      }
-    }
-  }, [timer])
-
-  useEffect(() => {
-    if(timer) {
-      document.title = `${document.title} ${timerTimeToDisplay[0]}${timerTimeToDisplay[1]}:${timerTimeToDisplay[2]}${timerTimeToDisplay[3]}`
-    }
-  }, [timerTimeToDisplay, timer])
 
   return (
     <timerContext.Provider

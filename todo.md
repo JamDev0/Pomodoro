@@ -1,6 +1,6 @@
 [] - Arrumar a bagunça que esta o código
 
-[] - Usar os reducers
+[] - Continuar os reducers
 
 [] - Usar o immer para alterar estados de forma mais facil(sem usar imutabilidade)
 

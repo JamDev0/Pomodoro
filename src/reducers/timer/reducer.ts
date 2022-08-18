@@ -114,4 +114,6 @@ export function timerReducer(state: timerState, action: any) {
           })
         }
     }
+
+    return state
 }
