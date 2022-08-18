@@ -1,7 +1,15 @@
+import { baseTimer } from './reducer';
+
 export enum actionTypes {
-    CONTINUE = 'CONTINUE',
-    STOP = 'STOP',
     START = 'START',
+    STOP = 'STOP',
+    CONTINUE = 'CONTINUE',
     CANCEL = 'CANCEL',
-    REMOVE_TIMER = 'REMOVE_TIMER',
+}
+
+export function startAction(incomingTimerData: baseTimer) {
+    return {
+        type: actionTypes.START,
+        payload: incomingTimerData
+    }
 }

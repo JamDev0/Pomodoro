@@ -3,7 +3,7 @@ import { actionTypes } from "./actions";
 import { produce } from 'immer'
 import { differenceInSeconds } from "date-fns";
 
-interface baseTimer {
+export interface baseTimer {
     taskName: string
     duration: number
 }
