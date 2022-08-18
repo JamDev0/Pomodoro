@@ -226,6 +226,12 @@ export function TimerProvider({ children }: TimerProviderProps) {
     }
   }, [timer])
 
+  useEffect(() => {
+    if(timer) {
+      document.title = `${document.title} ${timerTimeToDisplay[0]}${timerTimeToDisplay[1]}:${timerTimeToDisplay[2]}${timerTimeToDisplay[3]}`
+    }
+  }, [timerTimeToDisplay, timer])
+
   return (
     <timerContext.Provider
       value={{
