@@ -13,7 +13,9 @@ interface TimerInformationInputsProps {
 export function TimerInformationInputs({
   register,
 }: TimerInformationInputsProps) {
-  const { timerStatus } = useTimer()
+  const { timer } = useTimer()
+
+  const timerStatus = timer ? timer.id : 'idle' 
 
   const isInputsDisabled = timerStatus !== 'idle'
 

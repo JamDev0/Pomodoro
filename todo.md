@@ -1,6 +1,6 @@
 [] - Arrumar a bagunça que esta o código
 
-[] - Continuar os reducers
+[] - Continuar os reducers (terminar de descobrir oq ta dando erro no start action)
 
 [] - Usar o immer para alterar estados de forma mais facil(sem usar imutabilidade)
 

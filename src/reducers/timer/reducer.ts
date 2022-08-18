@@ -46,6 +46,21 @@ export function timerReducer(state: timerState, action: any) {
 
             const timer: timerCompleted = {
                 id,
+                ...action.payload,
+                startDate: new Date(),
+                continueDate: new Date(),
+                status: 'onGoing',
+            }
+
+            draft.timersList.unshift(timer)
+            draft.timerId = id
+          })
+
+          return produce(state, draft => {
+            const id = String(new Date().getTime())
+
+            const timer: timerCompleted = {
+                id,
                 ...action.payload.incomingTimerData,
                 startDate: new Date(),
                 continueDate: new Date(),

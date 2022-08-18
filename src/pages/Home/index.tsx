@@ -16,13 +16,8 @@ import { TimerInformationInputs } from './components/Timer/TimerInformationInput
 
 export function Home() {
   const {
-    addNewTimerToTimersList,
-    timerStatus,
-    setContinueProps,
-    setStopProps,
-    timer,
-    removeTimer,
-    cancelTimer,
+    startTimer,
+    timer
   } = useTimer()
 
   const startTimerFormValidationSchema = zod.object({
@@ -48,6 +43,8 @@ export function Home() {
 
   const timerHasInitialized = timer !== null
 
+  const timerStatus = timer ? timer.status : 'idle'
+
   const isStartButtonDisabled =
     timerStatus === 'idle' ? watchedTaskName === '' || !watchedDuration : false
 
@@ -64,7 +61,7 @@ export function Home() {
     timerStatus === 'over' ? document.title + ' Acabou!' : document.title
 
   function handleStartTimerFormSubmission(data: startTimerFormTypes) {
-    addNewTimerToTimersList(data)
+    startTimer(data)
     reset()
   }
 
@@ -112,17 +109,14 @@ export function Home() {
 
       case 'onGoing':
         event.preventDefault()
-        setStopProps()
         break
 
       case 'stopped':
         event.preventDefault()
-        setContinueProps()
         break
 
       case 'over':
         event.preventDefault()
-        removeTimer()
         break
     }
   }
@@ -147,7 +141,7 @@ export function Home() {
           >
             {defineButtonContentBasedOnTimerStatus()}
           </StartButton>
-          <CancelButton onClick={cancelTimer}>Cancelar</CancelButton>
+          <CancelButton onClick={() => {console.log('STOP')}}>Cancelar</CancelButton>
         </OnGoingButtonsContainer>
       ) : (
         <StartButton

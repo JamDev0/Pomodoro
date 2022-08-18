@@ -37,15 +37,9 @@ export interface timerCompleted extends baseTimer {
 }
 
 interface timerContextInterface {
+  timer: timerCompleted | null
   timerTimeToDisplay: string
-  timerStatus: timerStatusTypes
-  timer: timerCompleted | null | undefined
-  timersList: timerCompleted[] | []
-  setStopProps: () => void
-  setContinueProps: () => void
-  addNewTimerToTimersList: (arg: baseTimer) => void
-  removeTimer: () => void
-  cancelTimer: () => void
+  startTimer: (arg: baseTimer) => void
 }
 
 const timerContext = createContext<timerContextInterface>(
@@ -62,10 +56,12 @@ export function TimerProvider({ children }: TimerProviderProps) {
 
 
   const timer = timerId
-    ? timersList.find((timer) => timer.id === timerId)
+    ? timersList.find((timer) => timer.id === timerId)?? null
     : null
 
   const timerDurationInSeconds = timer ? timer.duration * 60 : 0
+
+  console.log('Timer duration', timer)
 
   const timerTimeLeftInSeconds = timerDurationInSeconds - timerSecondsPassed
 
@@ -80,26 +76,13 @@ export function TimerProvider({ children }: TimerProviderProps) {
   const timerTimeToDisplay =
     timerMinutesLeftFormatted + timerSecondsLeftFormatted
 
-  const timerStatus: timerStatusTypes = timer ? timer.status : 'idle'
-
-  function startTimer() { 
-    dispatch(startAction())
-    // pegar os valores vindo do app
+  function startTimer(incomingTimerData: baseTimer) { 
+    dispatch(startAction(incomingTimerData))
   }
 
   return (
     <timerContext.Provider
-      value={{
-        addNewTimerToTimersList,
-        timerTimeToDisplay,
-        timerStatus,
-        setContinueProps,
-        setStopProps,
-        timer,
-        removeTimer,
-        cancelTimer,
-        timersList,
-      }}
+      value={{ startTimer, timer, timerTimeToDisplay }}
     >
       {children}
     </timerContext.Provider>
