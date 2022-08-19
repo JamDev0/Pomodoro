@@ -1,5 +1,6 @@
 import { Circle } from 'phosphor-react'
-import { timerStatusTypes } from '../../../../../../hooks/useTimer'
+import { timerStatusTypes } from '../../../../../../reducers/timer/reducer'
+
 import { StatusContainer } from './Status.styles'
 
 interface StatusProps {
