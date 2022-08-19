@@ -1,5 +1,6 @@
 import styled, { css } from 'styled-components'
-import { timerStatusTypes } from '../../../../../../hooks/useTimer'
+
+import { timerStatusTypes } from '../../../../../../reducers/timer/reducer'
 
 interface StatusParams {
   currentStatus: timerStatusTypes
