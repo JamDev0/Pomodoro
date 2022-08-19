@@ -1,45 +1,35 @@
-import { differenceInSeconds } from 'date-fns'
+import {
+  baseTimer,
+  timerCompleted,
+  timerReducer,
+} from '../reducers/timer/reducer'
 
-import { timerReducer } from '../reducers/timer/reducer'
+import { createContext, ReactNode, useContext, useReducer } from 'react'
 
 import {
-  createContext,
-  ReactNode,
-  useContext,
-  useEffect,
-  useReducer,
-  useState,
-} from 'react'
-import { actionTypes, startAction } from '../reducers/timer/actions'
+  addTimerToTimersListAction,
+  cancelAction,
+  continueAction,
+  continueCountdownAction,
+  deleteAction,
+  setCountdownIdAction,
+  startCountdownAction,
+  stopAction,
+} from '../reducers/timer/actions'
 
 interface TimerProviderProps {
   children: ReactNode
 }
 
-interface baseTimer {
-  taskName: string
-  duration: number
-}
-
-export type timerStatusTypes =
-  | 'idle'
-  | 'stopped'
-  | 'onGoing'
-  | 'over'
-  | 'canceled'
-
-export interface timerCompleted extends baseTimer {
-  id: string
-  startDate: Date
-  status: timerStatusTypes
-  timeAlreadyPassed?: number
-  continueDate?: Date | null
-}
-
 interface timerContextInterface {
   timer: timerCompleted | null
   timerTimeToDisplay: string
+  timersList: timerCompleted[] | []
   startTimer: (arg: baseTimer) => void
+  stopTimer: () => void
+  continueTimer: () => void
+  cancelTimer: () => void
+  deleteTimer: () => void
 }
 
 const timerContext = createContext<timerContextInterface>(
@@ -47,21 +37,26 @@ const timerContext = createContext<timerContextInterface>(
 )
 
 export function TimerProvider({ children }: TimerProviderProps) {
-  const [{ countdownIntervalId, timerId, timerSecondsPassed, timersList}, dispatch ] = useReducer(timerReducer, {
-    timersList: [],
-    timerId: null,
-    countdownIntervalId: null,
-    timerSecondsPassed: 0,
-  })
+  const initialTimerState = localStorage.getItem('@Pomo:timerState')
+    ? JSON.parse(localStorage.getItem('@Pomo:timerState')!)
+    : {
+        timersList: [],
+        timerId: null,
+        countdownIntervalId: null,
+        timerSecondsPassed: 0,
+      }
 
+  const [state, dispatch] = useReducer(timerReducer, initialTimerState)
+
+  const { timerId, timerSecondsPassed, timersList } = state
+
+  localStorage.setItem('@Pomo:timerState', JSON.stringify(state))
 
   const timer = timerId
-    ? timersList.find((timer) => timer.id === timerId)?? null
+    ? timersList.find((timer) => timer.id === timerId) ?? null
     : null
 
   const timerDurationInSeconds = timer ? timer.duration * 60 : 0
-
-  console.log('Timer duration', timer)
 
   const timerTimeLeftInSeconds = timerDurationInSeconds - timerSecondsPassed
 
@@ -76,13 +71,69 @@ export function TimerProvider({ children }: TimerProviderProps) {
   const timerTimeToDisplay =
     timerMinutesLeftFormatted + timerSecondsLeftFormatted
 
-  function startTimer(incomingTimerData: baseTimer) { 
-    dispatch(startAction(incomingTimerData))
+  function startTimer(incomingTimerData: baseTimer) {
+    dispatch(addTimerToTimersListAction(incomingTimerData))
+    const countdown = setInterval(() => dispatch(startCountdownAction()), 1000)
+    dispatch(setCountdownIdAction(countdown))
   }
+
+  function stopTimer() {
+    dispatch(stopAction())
+  }
+
+  function continueTimer() {
+    dispatch(continueAction())
+    const countdown = setInterval(
+      () => dispatch(continueCountdownAction()),
+      1000,
+    )
+    dispatch(setCountdownIdAction(countdown))
+  }
+
+  function cancelTimer() {
+    dispatch(cancelAction())
+  }
+
+  function deleteTimer() {
+    dispatch(deleteAction())
+  }
+
+  // useEffect(() => {
+  //   if (timer) {
+  //     if (isTimerIntervalGoing === false) {
+  //       if (timer.continueDate) {
+  //         const countdown = setInterval(
+  //           () => dispatch(continueCountdownAction()),
+  //           1000,
+  //         )
+  //         dispatch(setCountdownIdAction(countdown))
+  //       } else {
+  //         const countdown = setInterval(
+  //           () => dispatch(startCountdownAction()),
+  //           1000,
+  //         )
+  //         dispatch(setCountdownIdAction(countdown))
+  //       }
+
+  //       console.log('interval dentro muito ', isTimerIntervalGoing)
+
+  //       setIsTimerIntervalGoing(true)
+  //     }
+  //   }
+  // }, [timer, isTimerIntervalGoing])
 
   return (
     <timerContext.Provider
-      value={{ startTimer, timer, timerTimeToDisplay }}
+      value={{
+        startTimer,
+        timer,
+        timerTimeToDisplay,
+        stopTimer,
+        continueTimer,
+        cancelTimer,
+        deleteTimer,
+        timersList,
+      }}
     >
       {children}
     </timerContext.Provider>

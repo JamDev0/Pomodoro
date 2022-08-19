@@ -1,21 +1,19 @@
 import { useTimer } from '../../../../../hooks/useTimer'
 
+import { useFormContext } from 'react-hook-form'
+
 import {
   InputsContainer,
   NameInput,
   TimeInput,
 } from './TimerInformationInputs.styles'
 
-interface TimerInformationInputsProps {
-  register: any
-}
-
-export function TimerInformationInputs({
-  register,
-}: TimerInformationInputsProps) {
+export function TimerInformationInputs() {
   const { timer } = useTimer()
 
-  const timerStatus = timer ? timer.id : 'idle' 
+  const { register } = useFormContext()
+
+  const timerStatus = timer ? timer.id : 'idle'
 
   const isInputsDisabled = timerStatus !== 'idle'
 

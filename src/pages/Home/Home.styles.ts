@@ -1,50 +1,4 @@
-import styled, { css, keyframes } from 'styled-components'
-
-import { timerStatusTypes } from '../../hooks/useTimer'
-
-interface StartButtonParams {
-  timerStatus: timerStatusTypes
-}
-
-const buttonStyleBasedOnTimerStatus = {
-  idle: css`
-    background-color: ${(props) => props.theme.colors.product.green[500]};
-
-    &:hover:not(:disabled) {
-      background-color: ${(props) => props.theme.colors.product.green[600]};
-    }
-
-    &:disabled {
-      opacity: 0.7;
-
-      cursor: not-allowed;
-    }
-  `,
-  stopped: css`
-    background-color: ${(props) => props.theme.colors.product.green[500]};
-
-    &:hover {
-      background-color: ${(props) => props.theme.colors.product.green[600]};
-    }
-  `,
-  onGoing: css`
-    background-color: ${(props) => props.theme.colors.feedback.red[500]};
-
-    flex-grow: 1;
-    flex-shrink: 1;
-
-    &:hover {
-      background-color: ${(props) => props.theme.colors.feedback.red[600]};
-    }
-  `,
-  over: css`
-    background-color: ${(props) => props.theme.colors.product.green[500]};
-
-    &:hover {
-      background-color: ${(props) => props.theme.colors.product.green[600]};
-    }
-  `,
-}
+import styled, { keyframes } from 'styled-components'
 
 export const HomeContainer = styled.form`
   display: flex;
@@ -59,9 +13,14 @@ export const HomeContainer = styled.form`
   margin-top: 20px;
 `
 
-const baseButton = styled.button`
-  width: 100%;
+export const ButtonsContainer = styled.div`
+  display: flex;
+  column-gap: 0.5rem;
 
+  width: 100%;
+`
+
+const baseButton = styled.button`
   display: flex;
   column-gap: 0.5rem;
   align-items: center;
@@ -84,19 +43,6 @@ const baseButton = styled.button`
     width: 1.5rem;
     height: 1.5rem;
   }
-`
-
-export const OnGoingButtonsContainer = styled.div`
-  display: flex;
-  column-gap: 0.5rem;
-
-  width: 100%;
-`
-
-export const StartButton = styled(baseButton)<StartButtonParams>`
-  ${(props) => {
-    return buttonStyleBasedOnTimerStatus[props.timerStatus]
-  }}
 `
 
 export const CancelButton = styled(baseButton)`

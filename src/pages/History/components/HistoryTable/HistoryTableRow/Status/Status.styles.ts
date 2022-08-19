@@ -1,5 +1,5 @@
 import styled, { css } from 'styled-components'
-import { timerStatusTypes } from '../../../../../hooks/useTimer'
+import { timerStatusTypes } from '../../../../../../hooks/useTimer'
 
 interface StatusParams {
   currentStatus: timerStatusTypes
@@ -16,7 +16,9 @@ const statusIndicatorColors = {
     ${(params) => params.theme.colors.feedback.yellow[500]}
   `,
   idle: css``,
-  stopped: css``,
+  stopped: css`
+    ${(params) => params.theme.colors.feedback.yellow[500]}
+  `,
 }
 
 export const StatusContainer = styled.span<StatusParams>`

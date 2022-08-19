@@ -7,9 +7,9 @@ interface NumberProps {
 }
 
 export function Number({ text }: NumberProps) {
-  const { timerStatus } = useTimer()
+  const { timer } = useTimer()
 
-  const isTimerOver = timerStatus === 'over'
+  const isTimerOver = timer ? timer.status === 'over' : false
 
   return <NumberContainer blink={isTimerOver}>{text}</NumberContainer>
 }

@@ -1,9 +1,9 @@
-import { formatRelative } from 'date-fns'
-import { timerCompleted } from '../../../../../hooks/useTimer'
-import { Status } from '../Status'
+import { formatDistanceToNow } from 'date-fns'
+import { Status } from './Status'
 import { HistoryTableRowContainer } from './HistoryTableRow.styles'
 
 import ptBr from 'date-fns/locale/pt-BR'
+import { timerCompleted } from '../../../../../reducers/timer/reducer'
 
 interface HistoryTableRowProps extends timerCompleted {}
 
@@ -18,8 +18,9 @@ export function HistoryTableRow({
       <td>{taskName}</td>
       <td>{duration} minutos</td>
       <td>
-        {formatRelative(new Date(), startDate, {
+        {formatDistanceToNow(new Date(startDate), {
           locale: ptBr,
+          addSuffix: true,
         })}
       </td>
       <td>

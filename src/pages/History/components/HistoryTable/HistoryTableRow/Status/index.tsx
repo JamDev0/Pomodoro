@@ -1,5 +1,5 @@
 import { Circle } from 'phosphor-react'
-import { timerStatusTypes } from '../../../../../hooks/useTimer'
+import { timerStatusTypes } from '../../../../../../hooks/useTimer'
 import { StatusContainer } from './Status.styles'
 
 interface StatusProps {
@@ -17,6 +17,9 @@ export function Status({ status }: StatusProps) {
 
       case 'over':
         return 'Concluído'
+
+      case 'stopped':
+        return 'Pausado'
     }
   }
 
