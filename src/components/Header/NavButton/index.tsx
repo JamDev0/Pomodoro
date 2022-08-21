@@ -1,10 +1,10 @@
 import { ReactNode } from 'react'
 
+import { useLocation } from 'react-router-dom'
+
 import { useNavigation } from '../../../hooks/useNavigation'
 
 import { NavButtonContainer } from './NavButton.styles'
-
-import { useLocation } from 'react-router-dom'
 
 interface NavButtonProps {
   icon: ReactNode
@@ -17,13 +17,11 @@ export function NavButton({ icon, description, To }: NavButtonProps) {
 
   const { pathname } = useLocation()
 
-  function isThisTheCurrentPage() {
-    return pathname === To
-  }
+  const isSelected = pathname === To
 
   return (
     <NavButtonContainer
-      selected={isThisTheCurrentPage()}
+      selected={isSelected}
       onClick={() => handleNavigation(To)}
     >
       <span>{description}</span>

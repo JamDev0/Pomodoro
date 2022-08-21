@@ -23,12 +23,12 @@ export function TimerInformationInputs() {
       <NameInput
         type="text"
         placeholder="Dê um nome para seu projeto"
-        list="task-sugestions"
+        list="task-suggestions"
         disabled={isInputsDisabled}
         {...register('taskName')}
       ></NameInput>
 
-      <datalist id="task-sugestions"></datalist>
+      <datalist id="task-suggestions"></datalist>
 
       <span>durante</span>
       <TimeInput

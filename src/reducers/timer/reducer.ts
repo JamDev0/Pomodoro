@@ -1,12 +1,8 @@
-import { actionTypes } from './actions'
-
 import { produce } from 'immer'
+
 import { differenceInSeconds } from 'date-fns'
 
-export interface baseTimer {
-  taskName: string
-  duration: number
-}
+import { actionTypes } from './actions'
 
 export type timerStatusTypes =
   | 'idle'
@@ -14,6 +10,11 @@ export type timerStatusTypes =
   | 'onGoing'
   | 'over'
   | 'canceled'
+
+export interface baseTimer {
+  taskName: string
+  duration: number
+}
 
 export interface timerCompleted extends baseTimer {
   id: string

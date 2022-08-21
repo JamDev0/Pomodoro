@@ -1,10 +1,17 @@
 import {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useReducer,
+  useState,
+} from 'react'
+
+import {
   baseTimer,
   timerCompleted,
   timerReducer,
 } from '../reducers/timer/reducer'
-
-import { createContext, ReactNode, useContext, useReducer } from 'react'
 
 import {
   addTimerToTimersListAction,
@@ -36,25 +43,58 @@ const timerContext = createContext<timerContextInterface>(
   {} as timerContextInterface,
 )
 
-export function TimerProvider({ children }: TimerProviderProps) {
-  const initialTimerState = localStorage.getItem('@Pomo:timerState')
-    ? JSON.parse(localStorage.getItem('@Pomo:timerState')!)
-    : {
-        timersList: [],
-        timerId: null,
-        countdownIntervalId: null,
-        timerSecondsPassed: 0,
-      }
+const initialTimerState = localStorage.getItem('@Pomo:timerState')
+  ? JSON.parse(localStorage.getItem('@Pomo:timerState')!)
+  : {
+      timersList: [],
+      timerId: null,
+      countdownIntervalId: null,
+      timerSecondsPassed: 0,
+    }
 
+export function TimerProvider({ children }: TimerProviderProps) {
   const [state, dispatch] = useReducer(timerReducer, initialTimerState)
 
   const { timerId, timerSecondsPassed, timersList } = state
 
-  localStorage.setItem('@Pomo:timerState', JSON.stringify(state))
+  useEffect(() => {
+    localStorage.setItem('@Pomo:timerState', JSON.stringify(state))
+  }, [state])
+
+  const [isTimerCurrentlyGoing, setIsTimerCurrentlyGoing] = useState<
+    boolean | null
+  >(null)
 
   const timer = timerId
     ? timersList.find((timer) => timer.id === timerId) ?? null
     : null
+
+  const shouldTimerStartNaturally =
+    timer && isTimerCurrentlyGoing === false && timer.status === 'onGoing'
+
+  useEffect(() => {
+    if (shouldTimerStartNaturally) {
+      if (timer.continueDate) {
+        const countdown = setInterval(
+          () => dispatch(continueCountdownAction()),
+          1000,
+        )
+        dispatch(setCountdownIdAction(countdown))
+
+        setIsTimerCurrentlyGoing(true)
+      } else {
+        if (timer.startDate) {
+          const countdown = setInterval(
+            () => dispatch(startCountdownAction()),
+            1000,
+          )
+          dispatch(setCountdownIdAction(countdown))
+
+          setIsTimerCurrentlyGoing(true)
+        }
+      }
+    }
+  }, [shouldTimerStartNaturally, timer])
 
   const timerDurationInSeconds = timer ? timer.duration * 60 : 0
 
@@ -75,6 +115,8 @@ export function TimerProvider({ children }: TimerProviderProps) {
     dispatch(addTimerToTimersListAction(incomingTimerData))
     const countdown = setInterval(() => dispatch(startCountdownAction()), 1000)
     dispatch(setCountdownIdAction(countdown))
+
+    setIsTimerCurrentlyGoing(true)
   }
 
   function stopTimer() {
@@ -88,6 +130,8 @@ export function TimerProvider({ children }: TimerProviderProps) {
       1000,
     )
     dispatch(setCountdownIdAction(countdown))
+
+    setIsTimerCurrentlyGoing(true)
   }
 
   function cancelTimer() {
@@ -98,29 +142,9 @@ export function TimerProvider({ children }: TimerProviderProps) {
     dispatch(deleteAction())
   }
 
-  // useEffect(() => {
-  //   if (timer) {
-  //     if (isTimerIntervalGoing === false) {
-  //       if (timer.continueDate) {
-  //         const countdown = setInterval(
-  //           () => dispatch(continueCountdownAction()),
-  //           1000,
-  //         )
-  //         dispatch(setCountdownIdAction(countdown))
-  //       } else {
-  //         const countdown = setInterval(
-  //           () => dispatch(startCountdownAction()),
-  //           1000,
-  //         )
-  //         dispatch(setCountdownIdAction(countdown))
-  //       }
-
-  //       console.log('interval dentro muito ', isTimerIntervalGoing)
-
-  //       setIsTimerIntervalGoing(true)
-  //     }
-  //   }
-  // }, [timer, isTimerIntervalGoing])
+  useEffect(() => {
+    setIsTimerCurrentlyGoing(false)
+  }, [])
 
   return (
     <timerContext.Provider

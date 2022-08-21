@@ -1,8 +1,10 @@
 import { Scroll, Timer } from 'phosphor-react'
+
 import Icon from '../../assets/Icon.svg'
 
-import { HeaderContainer } from './Header.styles'
 import { NavButton } from './NavButton'
+
+import { HeaderContainer } from './Header.styles'
 
 export function Header() {
   return (

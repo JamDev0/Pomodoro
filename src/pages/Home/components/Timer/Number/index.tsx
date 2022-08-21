@@ -1,6 +1,6 @@
-import { NumberContainer } from './Number.styles'
-
 import { useTimer } from '../../../../../hooks/useTimer'
+
+import { NumberContainer } from './Number.styles'
 
 interface NumberProps {
   text: string

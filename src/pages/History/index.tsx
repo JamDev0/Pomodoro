@@ -1,8 +1,8 @@
 import { useTimer } from '../../hooks/useTimer'
 
-import { HistoryContainer } from './History.styles'
-
 import { HistoryTable } from './components/HistoryTable'
+
+import { HistoryContainer } from './History.styles'
 
 export function History() {
   const { timer, timerTimeToDisplay } = useTimer()

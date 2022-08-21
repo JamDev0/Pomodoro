@@ -1,7 +1,10 @@
-import { Separator } from './Separator'
-import { Number } from './Number'
-import { TimerContainer } from './Timer.styles'
 import { useTimer } from '../../../../hooks/useTimer'
+
+import { TimerContainer } from './Timer.styles'
+
+import { Separator } from './Separator'
+
+import { Number } from './Number'
 
 export function Timer() {
   const { timerTimeToDisplay } = useTimer()

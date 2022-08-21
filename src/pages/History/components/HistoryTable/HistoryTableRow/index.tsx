@@ -1,9 +1,12 @@
 import { formatDistanceToNow } from 'date-fns'
-import { Status } from './Status'
-import { HistoryTableRowContainer } from './HistoryTableRow.styles'
 
 import ptBr from 'date-fns/locale/pt-BR'
+
 import { timerCompleted } from '../../../../../reducers/timer/reducer'
+
+import { Status } from './Status'
+
+import { HistoryTableRowContainer } from './HistoryTableRow.styles'
 
 interface HistoryTableRowProps extends timerCompleted {}
 

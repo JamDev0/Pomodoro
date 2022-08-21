@@ -6,18 +6,18 @@ import { zodResolver } from '@hookform/resolvers/zod'
 
 import { useTimer } from '../../hooks/useTimer'
 
+import { Timer } from './components/Timer'
+
+import { TimerInformationInputs } from './components/Timer/TimerInformationInputs'
+
+import { MainButton } from './components/MainButton'
+
 import {
   CancelButton,
   HomeContainer,
   ButtonsContainer,
   TimerTitle,
 } from './Home.styles'
-
-import { Timer } from './components/Timer'
-
-import { TimerInformationInputs } from './components/Timer/TimerInformationInputs'
-
-import { MainButton } from './components/MainButton'
 
 export function Home() {
   const { startTimer, timer, cancelTimer, timerTimeToDisplay } = useTimer()

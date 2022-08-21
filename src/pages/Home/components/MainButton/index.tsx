@@ -1,6 +1,9 @@
 import { ArrowFatLinesRight, HandPalm, Play, Plus } from 'phosphor-react'
+
 import { useFormContext } from 'react-hook-form'
+
 import { useTimer } from '../../../../hooks/useTimer'
+
 import { MainButtonContainer } from './MainButton.styles'
 
 export function MainButton() {
@@ -8,11 +11,11 @@ export function MainButton() {
 
   const { watch } = useFormContext()
 
-  const timerStatus = timer ? timer.status : 'idle'
-
   const watchedTaskName = watch('taskName')
 
   const watchedDuration = watch('duration')
+
+  const timerStatus = timer ? timer.status : 'idle'
 
   const disabled =
     timerStatus === 'idle' ? watchedTaskName === '' || !watchedDuration : false
