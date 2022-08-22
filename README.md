@@ -18,10 +18,6 @@ Um icone para a página e uma versão mobile
 
 <br>
 
-  "devDependencies": {
-    "@rocketseat/eslint-config": "^1.1.3",
-    "eslint": "^8.21.0",
-
   🎀 Layout:
   
   <br>
